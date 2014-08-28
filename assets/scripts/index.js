@@ -50,17 +50,23 @@ $(document).ready(function ()
     }
 
     function updateVideosCount () {
+        var cheklength = 0;
         videosList.forEach(function (videosEntry) {
             $.ajax({
                 type: 'GET',
                 url: youtubeApiServer + videosEntry.id + '?alt=json',
                 dataType: 'json'
             }).done(function (videosCountData) {
+                cheklength++;
                 // console.log(videosCountData);
                 videosEntry.viewCount = videosCountData.entry.yt$statistics.viewCount;
                 videosEntry.rating = videosCountData.entry.gd$rating.average;
                 videosTotalViewsCount += parseInt(videosEntry.viewCount);
-                console.log(videosTotalViewsCount);
+                // console.log(videosTotalViewsCount);
+                if (cheklength == videosList.length)
+                {
+                    $('.totalViewsCnt').text(videosTotalViewsCount);
+                }
             })
         })
     }
