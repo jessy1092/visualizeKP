@@ -10,6 +10,21 @@ $(document).ready(function ()
 
     updatePlaylist(accessToken);
 
+    $('a[href^="#"]').bind('click.smoothscroll', function (e) {
+        e.preventDefault();
+        target = this.hash;
+        $('html, body').stop().animate({
+            'scrollTop': $(target).offset().top,
+        }, 900, 'swing', function () {
+             window.location.hash = target;
+        });
+    });
+
+    $('.item').on('click', function () {
+        $('.item').removeClass('active');
+        $(this).addClass('active');
+    })
+
     function updatePlaylist (accessToken) {
         getPlayList(accessToken, function (playList) {
             // console.log(playList);
@@ -59,16 +74,53 @@ $(document).ready(function ()
             }).done(function (videosCountData) {
                 cheklength++;
                 // console.log(videosCountData);
-                videosEntry.viewCount = videosCountData.entry.yt$statistics.viewCount;
+                videosEntry.viewCount = parseInt(videosCountData.entry.yt$statistics.viewCount);
                 videosEntry.rating = videosCountData.entry.gd$rating.average;
-                videosTotalViewsCount += parseInt(videosEntry.viewCount);
+                videosTotalViewsCount += videosEntry.viewCount;
                 // console.log(videosTotalViewsCount);
                 if (cheklength == videosList.length)
                 {
                     $('.totalViewsCnt').text(videosTotalViewsCount);
+                    d3ViewVideosCountVisual();
                 }
             })
         })
+    }
+
+    function d3ViewVideosCountVisual () {
+        var max = 0;
+        var min = 9999999;
+
+        var dataNode = {
+            children: videosList.map(function (entry) {
+                max = max > entry.viewCount ? max : entry.viewCount;
+                min = min < entry.viewCount ? min : entry.viewCount;
+                console.log(entry.viewCount);
+                return {
+                    value: entry.viewCount,
+                    videosEntry: entry
+                };
+            })
+        };
+
+        var d3Pack = d3.layout.pack().sort(function (a, b) { return b.value - a.value; })
+                        .size([680, 680]).padding(20).nodes(dataNode);
+
+        d3Pack.shift();
+        console.log(d3Pack);
+        var colorScale = d3.scale.linear().domain([min, max]).range(['#0aa', '#0a5']);
+
+        var dataPack = d3.select('.videosCount').selectAll('circle.pack').data(d3Pack);
+
+        dataPack.enter().append('circle').attr('class', 'pack');
+
+        d3.select('.videosCount').selectAll('circle.pack').attr({
+            cx: function (d) { return d.x; },
+            cy: function (d) { return d.y; },
+            r: function (d) { return d.r; },
+            fill: function (d) { return colorScale(d.value); },
+            stroke: '#fff'
+        });
     }
 });
 

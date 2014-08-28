@@ -15,10 +15,14 @@ body {
 }
 
 #totalCnt {
-    text-align: center;
     height: 680px;
     line-height: 680px;
     font-size: 60px;
+}
+
+.divCenter {
+    margin: 0px auto;
+    text-align: center;
 }
 
 /*-------------------------| Top |-------------------------*/
