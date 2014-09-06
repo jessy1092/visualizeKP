@@ -25,6 +25,22 @@ body {
     text-align: center;
 }
 
+
+#visualVideoTip {
+  position: absolute;
+  width: auto;
+  height: auto;
+}
+
+#visualVideo {
+    height: 340px;
+    width: 460px;
+}
+
+#visualVideoTip.hidden {
+    display: none;
+}
+
 /*-------------------------| Top |-------------------------*/
 
 /*-------------------------| Footer |-------------------------*/

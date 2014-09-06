@@ -3,6 +3,7 @@ $(document).ready(function ()
     var kpApiServer = 'http://api.kptaipei.tw/v1/';
     var youtubeApiServer = 'http://gdata.youtube.com/feeds/api/videos/';
     var accessToken = 'kp53f5678ed52da7.75516738';
+    var youtubeEmbedURL = '//www.youtube.com/embed/';
     var videosList = [];
     var videosTotalViewsCount = 0;
 
@@ -90,6 +91,8 @@ $(document).ready(function ()
     }
 
     function d3ViewVideosCountVisual () {
+        var width = 680;
+        var heigth = 680;
         var max = 0;
         var min = 9999999;
 
@@ -106,7 +109,7 @@ $(document).ready(function ()
         };
 
         var d3Pack = d3.layout.pack().sort(function (a, b) { return b.value - a.value; })
-                        .size([680, 680]).padding(20).nodes(dataNode);
+                        .size([width, heigth]).padding(20).nodes(dataNode);
 
         d3Pack.shift();
         // console.log(d3Pack);
@@ -124,7 +127,7 @@ $(document).ready(function ()
             stroke: '#fff'
         });
 
-        console.log(d3Pack);
+        // console.log(d3Pack);
         var dataText = d3.select('.videosCount').selectAll('text.pack').data(d3Pack);
         dataText.enter().append('text').attr('class', 'pack').style('pointer-events', 'none');
 
@@ -135,10 +138,26 @@ $(document).ready(function ()
             'text-anchor': 'middle',
             'dominant-baseline': 'central'
         }).text(function (d) {
-            console.log(d.videosEntry.title);
+            // console.log(d.videosEntry.title);
             var ans = d.value > 20000 ? d.videosEntry.title.substring(0, d.r/4.5) :'';
             return ans;
         });
+
+        d3.select('.videosCount').selectAll('circle.pack').on('mouseover', function (d) {
+
+            var xPosition = d.x;
+            var yPosition = d.y + heigth;
+
+            d3.select('#visualVideoTip').transition().duration(1000)
+                .style('left', xPosition + 'px')
+                .style('top', yPosition + 'px');
+
+            d3.select('#visualVideoTip').classed('hidden', false);
+
+            d3.select('#visualVideoTipTitle').text(d.videosEntry.title);
+
+            d3.select('#visualVideo').attr('src', youtubeEmbedURL + d.videosEntry.id);
+        })
     }
 });
 
